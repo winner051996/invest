@@ -26,27 +26,23 @@ function ExcelParser() {
 
       const parsedData = [];
 
-      for (let i = 0; i < jsonData[0].length; i += 8) {
-        let companyName = jsonData[0][i];
-        let ticker = jsonData[2][i + 7];
-
-        if (companyName) {
-          let companyData = {
-            name: `${companyName} (${ticker})`,
-            ticker: ticker,
-            rows: [],
-          };
-
-          for (let j = 2; j < jsonData.length; j++) {
-            let row = jsonData[j].slice(i, i + 8);
-            if (row.some((cell) => cell !== undefined && cell !== null)) {
-              companyData.rows.push(row);
-            }
-          }
-
-          parsedData.push(companyData);
+      jsonData[0].forEach((value, index) => {
+        let companyName = value;
+        let ticker = jsonData[2][index + 7];
+        let companyData = {
+          name: `${companyName} (${ticker})` ?? 'Пусто',
+          ticker,
+          rows: [],
+        };
+        jsonData.forEach((v, i) => {
+          if (i < 2) return;
+          let row = jsonData[i].slice(index, index + 8);
+          if (row.some((cell) => cell !== undefined && cell !== null)) {
+          companyData.rows.push(row);
         }
-      }
+        })
+        parsedData.push(companyData);
+      })
 
       fetchTickerPrices(parsedData);
     };
